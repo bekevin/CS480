@@ -1,22 +1,41 @@
-package test;
+package Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
-public class Test {
+public class test {
 	String[] allOperations = { "+", "-", "*", "/", "^", "(", ")" };
-	String[] allNumbers = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9","." };
+	String[] allNumbers = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+			"." };
 
 	public static void main(String[] args) {
 
-		new Test().run();
+		new test().run();
 	}
 
 	public void run() {
-		String output = PEMDAS("3*(-6+-4)");
-		System.out.println(output);
+		while (true) {
+			while (true) {
+				Scanner sc = new Scanner(System.in);
+				System.out.println("Please enter your equation:");
+				try {
+					String input = sc.nextLine();
+					if (verification(input) == false || input.length() == 0||verificationBracket(input)==false) {
+						System.out.println("that is not a valid input \n");
+						break;
+					}
+					String output = PEMDAS(input);
+					System.out.println("your answer is: " + output + "\n");
+				} catch (Exception e) {
+					System.out.println("That is not a valid option");
+					break;
+				}
+			}
+		}
+
 	}
 
 	// PEMDAS operation
@@ -25,6 +44,11 @@ public class Test {
 		ArrayList<Double> num = new ArrayList();
 		ArrayList<String> operand = new ArrayList();
 		Double total = 0.0;
+
+		// if nothing was inputed
+		if (input.length() == 0) {
+			return "That is not a valid input";
+		}
 
 		// makes it so that the string can be read by PEMDAS
 		input = makeStringReadable(input);
@@ -58,6 +82,10 @@ public class Test {
 		num = findNumber(input);
 		operand = findOperations(input);
 
+		// if there are no number inputed
+		if (num.size() == 0) {
+			return "that is not a valid input";
+		}
 		// second loop to do powers
 		for (int i = 0; i < operand.size(); i++) {
 			if (operand.get(i).equals("^")) {
@@ -201,7 +229,7 @@ public class Test {
 
 	// this method will test to see if all the char are
 	// acceptable
-	public boolean varification(String input) {
+	public boolean verification(String input) {
 		int count = 0;
 		for (int i = 0; i < input.length(); i++) {
 			count = 0;
@@ -224,6 +252,27 @@ public class Test {
 			if (count == 0) {
 				return false;
 			}
+		}
+		return true;
+	}
+	
+	public boolean verificationBracket(String input){
+		int count1 = 0;
+		int count2 = 0;
+		
+		for(int i = 0; i< input.length(); i++){
+			if(input.substring(i, i+1).equals("(")){
+				count1++;
+			}
+			if(input.substring(i, i+1).equals(")")){
+				count2++;
+			}
+			if(count2> count1){
+				return false;
+			}
+		}
+		if(count1!=count2){
+			return false;
 		}
 		return true;
 	}
