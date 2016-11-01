@@ -14,20 +14,69 @@ public class Test {
 	}
 	
 	public void run(){
-		Double output = MDAS("2*2*2*2*2 ");
+		String output = PEMDAS("15/(3*(3+2)) ");
 		System.out.println(output);
 	}
 	
-	public Double MDAS(String input){
+	//PEMDAS operation
+	public String PEMDAS(String input){
 		ArrayList<Double> num = new ArrayList();
 		ArrayList<String> operand = new ArrayList();
 		Double total = 0.0;
 		
+		System.out.println(input);
+		
+		//for parenthesis
+		int count = 0;
+		int temp1 = 0;
+		int temp2 = 0;
+		String temp3 = "";
+		
+		//this checks for parenthesis and does it with a recursive call
+		//in case you have a parentheses inside another
+		for(int i = 0; i < input.length(); i++){
+			if(input.substring(i, i+1).equals("(") && count == 0){
+				temp1 = i;
+				count++;
+			}else if(input.substring(i, i+1).equals(")")&&count == 1){
+				temp2 = i;
+				temp3 = PEMDAS(input.substring(temp1+1,temp2)+" ");
+				input = input.substring(0, temp1) + temp3 + input.substring(temp2+1, input.length());
+			}else if(input.substring(i, i+1).equals("(") && count> 0){
+				count++;
+			}else if(input.substring(i, i+1).equals(")")&&count > 1){
+				count--;
+			}
+		}
+		
 		num = findNumber(input);
 		operand = findOperations(input);
-		System.out.println(operand.size());
-		System.out.println(num.size());
 		
+		/*//for parenthesis
+		int count = 0;
+		int temp = 0;
+		int temp2 = 0;
+		
+		for(int i = 0; i<operand.size();i++){
+			if(operand.get(i).equals("(")){
+				temp = i;
+			}else if(operand.get(i).equals(")")){
+				temp2 = i;
+				PEMDAS("");
+			}
+		}
+		*/
+		
+		//second loop to do powers
+		for(int i = 0; i< operand.size(); i++){
+			if(operand.get(i).equals("^")){
+				total = Math.pow(num.get(i),num.get(i+1));
+				num.set(i, total);
+				num.remove(i+1);
+				operand.remove(i);
+				i--;
+			}
+		}
 		
 		//first loop to do multiplication and division
 		for(int i = 0; i < operand.size(); i++){
@@ -68,8 +117,8 @@ public class Test {
 				i--;//this is to make sure we go through every operator as the operators were shifted down 1
 			}
 		}
-		
-		return num.get(0);
+		String output = Double.toString(num.get(0));
+		return output;
 	}
 	
 	
@@ -118,7 +167,7 @@ public class Test {
 	
 	//this method tells if a string is an operation
 	public boolean isOperation(String s){
-		String[] allOperations = {"+","-","*","/"};
+		String[] allOperations = {"+","-","*","/","^","(",")"};
 		for(String x: allOperations){
 			if(x.compareTo(s)==0){
 				return true;
